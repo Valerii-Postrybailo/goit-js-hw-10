@@ -1,5 +1,6 @@
 import './css/styles.css';
 import debounce from 'lodash.debounce';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { fetchCountries } from './fetchCountries';
 
 const DEBOUNCE_DELAY = 300;
@@ -29,7 +30,7 @@ const inputEvtHandler = evt => {
     .then(data => {
       // console.log(data);
       if (data.length > 10) {
-        console.log('Too many matches found. Please enter a more specific name');
+        Notify.info('Too many matches found. Please enter a more specific name');
         return;
       }
       renderMarkup(data);
@@ -37,7 +38,7 @@ const inputEvtHandler = evt => {
     .catch(err => {
       deleteMarkup(listEl);
       deleteMarkup(infoEl);
-      console.log('Oops, there is no country with that name');
+      Notify.failure('Oops, there is no country with that name');
     });
 }
 
@@ -45,7 +46,8 @@ input.addEventListener('input', debounce(inputEvtHandler, DEBOUNCE_DELAY));
 
 
 const renderMarkup = data => {
-  if (data.lenght === 1) {
+  console.log(data)
+  if (data.length === 1) {
     deleteMarkup(listEl);
     const markupInfo = creatMurkupWithInfoAboutCountry(data);
     infoEl.innerHTML = markupInfo;
@@ -67,11 +69,12 @@ const createListMarkup = data => {
 
 const creatMurkupWithInfoAboutCountry = data => {
   return data.map(
-    ({ name, capital, flags, languages }) =>
+    ({ name, capital,population, flags, languages }) =>
       ` <h1><img src="${flags.svg}" alt="${name.official}" width="40" height="40">${
         name.official
       }</h1>
       <p>Capital: ${capital}</p>
+      <p>Population: ${population}</p>
       <p>Languages: ${Object.values(languages)}</p>`,
   )
 }
